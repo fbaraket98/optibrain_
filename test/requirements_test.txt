@@ -1,5 +1,0 @@
-tensorflow
-smt
-catboost
-xgboost
-lightgbm

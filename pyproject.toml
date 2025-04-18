@@ -23,7 +23,7 @@ dependencies = [
 examples = ["matplotlib == 3.9.2"]
 
 test = ["tensorflow",
-        "smt",
-        "catboost",
-        "xgboost",
-        "lightgbm"]
+    "smt",
+    "catboost",
+    "xgboost",
+    "lightgbm"]
