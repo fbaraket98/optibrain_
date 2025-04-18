@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build_backend = "setuptools.build_meta"
+[project]
+name = "optibrain"
+version = "2025.4.1"
+description = ""
+authors = [{ name = 'Fatma Baraket', email = 'fatma.baraket@mews-labs.com' }]
+readme = "README.md"
+requires-python = ">=3.6"
+dependencies = [
+    "FLAML == 2.3.4",
+    "numpy == 2.1.0",
+    "palma == 2025.1.5",
+    "pandas == 2.2.3",
+    "pytest == 8.3.5",
+    "revival @ git+https://github.com/eurobios-mews-labs/revivAl.git",
+    "scikit-learn == 1.6.1",
+    "scipy == 1.15.2",
+]
+
+[project.optional-dependencies]
+examples = ["matplotlib == 3.9.2"]
+
+test = ["tensorflow",
+        "smt",
+        "catboost",
+        "xgboost",
+        "lightgbm"]
