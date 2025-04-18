@@ -30,7 +30,7 @@ jobs:
         run: |
           pip install pytest-cov
           pip install .
-          pip install -r .[test]
+          pip install .[test]
           python -m coverage run -m pytest
           python -m coverage report
           python -m coverage json
