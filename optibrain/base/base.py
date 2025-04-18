@@ -4,7 +4,7 @@ from palma.base.splitting_strategy import ValidationStrategy
 from sklearn.model_selection import ShuffleSplit
 from optibrain.utils.project import Project
 from optibrain.utils.engine import FlamlOptimizer
-from typing import Optional,Any, List, Dict, Tuple
+from typing import Optional, Any, List, Dict, Tuple
 from sklearn.base import BaseEstimator
 
 
@@ -19,7 +19,10 @@ class SurrogateModeling:
         self.project_name = project_name
 
     def get_best_model(
-        self, X: pd.DataFrame, y: pd.DataFrame, learners:Optional[Dict[str, BaseEstimator]] = None
+        self,
+        X: pd.DataFrame,
+        y: pd.DataFrame,
+        learners: Optional[Dict[str, BaseEstimator]] = None,
     ):
         """Function that aims to select the best model, the user can also add learner to flaml
         :param X: data for training
