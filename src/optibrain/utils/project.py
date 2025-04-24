@@ -20,7 +20,7 @@ class Project:
 
     Attributes
     ----------
-    base_index (List[int]): List of base indices for the project.
+    base_index (List[int]): List of optibrain indices for the project.
     components (dict): Dictionary containing project components.
     date (datetime): The date and time when the project was created.
     project_id (str): Unique identifier for the project.
@@ -53,14 +53,14 @@ class Project:
 
     @check_started("You cannot restart an Project")
     def start(
-            self,
-            X: pd.DataFrame,
-            y: pd.Series,
-            splitter,
-            X_test=None,
-            y_test=None,
-            groups=None,
-            **kwargs,
+        self,
+        X: pd.DataFrame,
+        y: pd.Series,
+        splitter,
+        X_test=None,
+        y_test=None,
+        groups=None,
+        **kwargs,
     ) -> None:
         from optibrain.utils.checker import ProjectPlanChecker
         from palma import logger

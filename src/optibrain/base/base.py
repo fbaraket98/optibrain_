@@ -22,10 +22,10 @@ class SurrogateModeling:
         self.project_name = project_name
 
     def get_best_model(
-            self,
-            X: pd.DataFrame,
-            y: pd.DataFrame,
-            learners: Optional[Dict[str, BaseEstimator]] = None,
+        self,
+        X: pd.DataFrame,
+        y: pd.DataFrame,
+        learners: Optional[Dict[str, BaseEstimator]] = None,
     ):
         """Function that aims to select the best model, the user can also add learner to flaml
         :param X: data for training

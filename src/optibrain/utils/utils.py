@@ -48,7 +48,7 @@ def _clone(estimator):
 
 
 def get_splitting_matrix(
-        X: pd.DataFrame, iter_cross_validation: iter, expand=False
+    X: pd.DataFrame, iter_cross_validation: iter, expand=False
 ) -> pd.DataFrame:
     """
     Generate a splitting matrix based on cross-validation iterations.

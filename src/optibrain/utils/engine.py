@@ -25,19 +25,16 @@ class BaseOptimizer(metaclass=ABCMeta):
 
     @abstractmethod
     def optimize(
-            self, X: pd.DataFrame, y: pd.Series, splitter: "ValidationStrategy" = None
-    ) -> None:
-        ...
+        self, X: pd.DataFrame, y: pd.Series, splitter: "ValidationStrategy" = None
+    ) -> None: ...
 
     @property
     @abstractmethod
-    def best_model_(self) -> None:
-        ...
+    def best_model_(self) -> None: ...
 
     @property
     @abstractmethod
-    def transformer_(self) -> None:
-        ...
+    def transformer_(self) -> None: ...
 
     @property
     def engine_parameters(self) -> Dict:
@@ -84,7 +81,7 @@ class FlamlOptimizer(BaseOptimizer):
         self.learner = learner_dict
 
     def optimize(
-            self, X: pd.DataFrame, y: pd.DataFrame, splitter: ValidationStrategy = None
+        self, X: pd.DataFrame, y: pd.DataFrame, splitter: ValidationStrategy = None
     ) -> None:
         split_type = None if splitter is None else splitter.splitter
         groups = None if splitter is None else splitter.groups

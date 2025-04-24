@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets import make_classification
 
-from optibrain.base.base import SurrogateModeling
+from optibrain import SurrogateModeling
 from optibrain.utils.NN_model import FullNeuralNetwork
 from optibrain.utils.kriging_model import KRGModel
 

@@ -6,27 +6,33 @@ from tensorflow.keras import layers
 
 class FullNeuralNetwork(BaseEstimator):
     def __init__(
-            self,
-            n_jobs=None,
-            hidden_units_l1=32,
-            hidden_units_l2=32,
-            act_l1="relu",
-            act_l2="relu",
-            bias_l1=True,
-            bias_l2=True,
-            optimizer="adam",
-            epochs=50,
-            batch_size=32,
-            task="regression",
+        self,
+        n_jobs=None,
+        hidden_units_l1=32,
+        hidden_units_l2=32,
+        hidden_units_l3=32,
+        act_l1="relu",
+        act_l2="relu",
+        act_l3="relu",
+        bias_l1=True,
+        bias_l2=True,
+        bias_l3=True,
+        optimizer="adam",
+        epochs=50,
+        batch_size=32,
+        task="regression",
     ):
         super().__init__()
         self.n_jobs = n_jobs
         self.hidden_units_l1 = hidden_units_l1
         self.hidden_units_l2 = hidden_units_l2
+        self.hidden_units_l3 = hidden_units_l3
         self.act_l1 = act_l1
         self.act_l2 = act_l2
+        self.act_l3 = act_l3
         self.bias_l1 = bias_l1
         self.bias_l2 = bias_l2
+        self.bias_l3 = bias_l3
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
@@ -43,6 +49,7 @@ class FullNeuralNetwork(BaseEstimator):
         return {
             "hidden_units_l1": {"domain": (16, 64), "init_value": 32},
             "hidden_units_l2": {"domain": (16, 64), "init_value": 32},
+            "hidden_units_l3": {"domain": (16, 64), "init_value": 32},
             "act_l1": {"domain": ["relu", "tanh"], "init_value": "relu"},
             "act_l2": {"domain": ["relu", "tanh"], "init_value": "relu"},
             "bias_l1": {"domain": [True, False], "init_value": True},
@@ -65,6 +72,7 @@ class FullNeuralNetwork(BaseEstimator):
                 self.hidden_units_l2, activation=self.act_l2, use_bias=self.bias_l2
             )
         )
+
         model.add(layers.Dense(output_dim, activation="linear"))
         model.compile(
             optimizer=self.optimizer, loss="mean_squared_error", metrics=["mse"]
