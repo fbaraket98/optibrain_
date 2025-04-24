@@ -74,7 +74,6 @@ class FullNeuralNetwork(BaseEstimator):
     def fit(self, X, y, **kwargs):
         X_scaled = self.scaler.fit_transform(X)
 
-        # 🔧 Convert y to a 2D ndarray
         if hasattr(y, "values"):
             y = y.values
         if y.ndim == 1:
