@@ -40,7 +40,6 @@ class Project:
     """
 
     def __init__(self, project_name: str, problem: str) -> None:
-
         self.__project_name = project_name
         self.__date = datetime.now()
         self.__study_name = (
@@ -51,18 +50,6 @@ class Project:
         self.__components = {}
         self.__is_started = False
         self.__component_list = []
-
-    @check_started("You cannot add a Component for a started Project")
-    def add(self, component: "Component") -> None:
-        from palma.components.base import ProjectComponent
-
-        self.__component_list.append(str)
-        if isinstance(component, ProjectComponent):
-            self.__components.update({str(component): component})
-        else:
-            raise TypeError(
-                "The added component must be an instance of class Component"
-            )
 
     @check_started("You cannot restart an Project")
     def start(
