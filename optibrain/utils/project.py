@@ -75,7 +75,7 @@ class Project:
             groups=None,
             **kwargs,
     ) -> None:
-        from base.utils.checker import ProjectPlanChecker
+        from optibrain.utils.checker import ProjectPlanChecker
         from palma import logger
 
         self.__validation_strategy = ValidationStrategy(splitter)
