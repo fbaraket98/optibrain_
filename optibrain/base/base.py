@@ -1,11 +1,13 @@
+from typing import Optional, List, Dict
+
 import pandas as pd
-from revival import LiteModel
 from palma.base.splitting_strategy import ValidationStrategy
-from sklearn.model_selection import ShuffleSplit
-from optibrain.utils.project import Project
-from optibrain.utils.engine import FlamlOptimizer
-from typing import Optional, Any, List, Dict, Tuple
+from revival import LiteModel
 from sklearn.base import BaseEstimator
+from sklearn.model_selection import ShuffleSplit
+
+from optibrain.utils.engine import FlamlOptimizer
+from optibrain.utils.project import Project
 
 
 class SurrogateModeling:
@@ -14,15 +16,16 @@ class SurrogateModeling:
         self.__performance = None
         self.__config_estimator = None
         self.__best_time_train = None
+        self.__best_config = None
         self.estimator_list = estimator_list
         self.problem = problem
         self.project_name = project_name
 
     def get_best_model(
-        self,
-        X: pd.DataFrame,
-        y: pd.DataFrame,
-        learners: Optional[Dict[str, BaseEstimator]] = None,
+            self,
+            X: pd.DataFrame,
+            y: pd.DataFrame,
+            learners: Optional[Dict[str, BaseEstimator]] = None,
     ):
         """Function that aims to select the best model, the user can also add learner to flaml
         :param X: data for training
@@ -58,12 +61,18 @@ class SurrogateModeling:
         else:
             optimizer = FlamlOptimizer(engine_parameters, {})
         optimizer.start(project)
+        # Get models performances
         self.__performance = optimizer.best_loss_estimator
-        self.__config_estimator = optimizer.best_confid_estimator
+        self.__config_estimator = optimizer.best_config_estimator
         self.__best_time_train = optimizer.best_time_estimator
+        self.__best_config = optimizer.best_config
         # Get the best model
         best_model = optimizer.best_model_
         self.__model = best_model
+
+    @property
+    def get_best_config(self):
+        return self.__best_config
 
     @property
     def get_best_time_train_estimator(self):

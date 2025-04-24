@@ -2,13 +2,17 @@ import logging
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
 from typing import Dict
+
 import pandas as pd
 from flaml import AutoML
-from sklearn import base
-from optibrain.utils.project import Project
 from palma.base.splitting_strategy import ValidationStrategy
-from optibrain.utils.utils import get_hash
+from sklearn import base
 from sklearn.multioutput import MultiOutputRegressor, MultiOutputClassifier
+
+from optibrain.utils.NN_model import FullNeuralNetwork
+from optibrain.utils.kriging_model import KRGModel
+from optibrain.utils.project import Project
+from optibrain.utils.utils import get_hash
 
 
 class BaseOptimizer(metaclass=ABCMeta):
@@ -21,16 +25,19 @@ class BaseOptimizer(metaclass=ABCMeta):
 
     @abstractmethod
     def optimize(
-        self, X: pd.DataFrame, y: pd.Series, splitter: "ValidationStrategy" = None
-    ) -> None: ...
+            self, X: pd.DataFrame, y: pd.Series, splitter: "ValidationStrategy" = None
+    ) -> None:
+        ...
 
     @property
     @abstractmethod
-    def best_model_(self) -> None: ...
+    def best_model_(self) -> None:
+        ...
 
     @property
     @abstractmethod
-    def transformer_(self) -> None: ...
+    def transformer_(self) -> None:
+        ...
 
     @property
     def engine_parameters(self) -> Dict:
@@ -77,7 +84,7 @@ class FlamlOptimizer(BaseOptimizer):
         self.learner = learner_dict
 
     def optimize(
-        self, X: pd.DataFrame, y: pd.DataFrame, splitter: ValidationStrategy = None
+            self, X: pd.DataFrame, y: pd.DataFrame, splitter: ValidationStrategy = None
     ) -> None:
         split_type = None if splitter is None else splitter.splitter
         groups = None if splitter is None else splitter.groups
@@ -87,6 +94,10 @@ class FlamlOptimizer(BaseOptimizer):
         self.engine_parameters["task"] = self.problem
         self.allowing_splitter(splitter)
         self.__optimizer = AutoML()
+
+        # add NeuralNetwork and KRG models to the flaml optimizer
+        self.__optimizer.add_learner("NN", FullNeuralNetwork)
+        self.__optimizer.add_learner("KRG", KRGModel)
 
         is_multi_output = isinstance(y, pd.DataFrame) and y.shape[1] > 1
         # Add new learners
@@ -142,9 +153,13 @@ class FlamlOptimizer(BaseOptimizer):
         )
 
     @property
-    def best_confid_estimator(self):
+    def best_config_estimator(self):
         return self.__optimizer.best_config_per_estimator
 
     @property
     def best_time_estimator(self):
         return self.__optimizer.best_config_train_time
+
+    @property
+    def best_config(self):
+        return self.__optimizer.best_config

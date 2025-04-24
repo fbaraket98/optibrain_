@@ -27,3 +27,11 @@ test = ["tensorflow",
     "catboost",
     "xgboost",
     "lightgbm"]
+
+lint = ["black"]
+
+dev = ["optibrain[test, lint]",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/eurobios-mews-labs/optibrain"

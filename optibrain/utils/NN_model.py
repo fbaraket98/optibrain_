@@ -1,22 +1,38 @@
+import tensorflow.keras as keras
 from sklearn.base import BaseEstimator
 from sklearn.preprocessing import StandardScaler
-import tensorflow.keras as keras
 from tensorflow.keras import layers
-import numpy as np
 
 
 class FullNeuralNetwork(BaseEstimator):
     def __init__(
-        self, n_jobs=None, hidden_units=64, epochs=10, batch_size=32, task="regression"
+            self,
+            n_jobs=None,
+            hidden_units_l1=32,
+            hidden_units_l2=32,
+            act_l1="relu",
+            act_l2="relu",
+            bias_l1=True,
+            bias_l2=True,
+            optimizer="adam",
+            epochs=50,
+            batch_size=32,
+            task="regression",
     ):
         super().__init__()
-        self.task = task
-        self.hidden_units = hidden_units
+        self.n_jobs = n_jobs
+        self.hidden_units_l1 = hidden_units_l1
+        self.hidden_units_l2 = hidden_units_l2
+        self.act_l1 = act_l1
+        self.act_l2 = act_l2
+        self.bias_l1 = bias_l1
+        self.bias_l2 = bias_l2
+        self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size
-        self.scaler = StandardScaler()
+        self.task = task
         self.model = None
-        self.n_jobs = n_jobs
+        self.scaler = StandardScaler()
 
     @classmethod
     def init(cls):
@@ -25,89 +41,85 @@ class FullNeuralNetwork(BaseEstimator):
     @classmethod
     def search_space(cls, data_size=None, task=None):
         return {
-            "epochs": {
-                "domain": (10, 100),
-                "init_value": 10,
-                "low_cost_init_value": 10,
-            },
+            "hidden_units_l1": {"domain": (16, 64), "init_value": 32},
+            "hidden_units_l2": {"domain": (16, 64), "init_value": 32},
+            "act_l1": {"domain": ["relu", "tanh"], "init_value": "relu"},
+            "act_l2": {"domain": ["relu", "tanh"], "init_value": "relu"},
+            "bias_l1": {"domain": [True, False], "init_value": True},
+            "bias_l2": {"domain": [True, False], "init_value": True},
+            "optimizer": {"domain": ["sgd", "rmsprop", "adam"], "init_value": "adam"},
+            "epochs": {"domain": (10, 200), "init_value": 50},
             "batch_size": {"domain": (16, 128), "init_value": 32},
-            "hidden_units": {"domain": (16, 256), "init_value": 64},
         }
 
-    @classmethod
-    def cost_relative2lgbm(cls):
-        return 10
-
-    def _to_int(self, val):
-        return int(val[1]) if isinstance(val, tuple) else int(val)
-
-    def _build_model(self, input_dim):
-        hidden_units = self._to_int(self.hidden_units)
+    def _build_model(self, input_dim, output_dim):
         model = keras.Sequential()
         model.add(layers.Input(shape=(input_dim,)))
-        model.add(layers.Dense(hidden_units, activation="relu"))
         model.add(
             layers.Dense(
-                1, activation="sigmoid" if self.task == "classification" else "linear"
+                self.hidden_units_l1, activation=self.act_l1, use_bias=self.bias_l1
             )
         )
-        model.add(layers.Dense(int(2)))
+        model.add(
+            layers.Dense(
+                self.hidden_units_l2, activation=self.act_l2, use_bias=self.bias_l2
+            )
+        )
+        model.add(layers.Dense(output_dim, activation="linear"))
+        model.compile(
+            optimizer=self.optimizer, loss="mean_squared_error", metrics=["mse"]
+        )
         return model
 
-    def fit(self, X_train, y_train, **kwargs):
-        X_scaled = self.scaler.fit_transform(X_train)
-        self.model = self._build_model(input_dim=X_scaled.shape[1])
-        self.model.compile(
-            optimizer="adam",
-            loss=(
-                "binary_crossentropy"
-                if self.task == "classification"
-                else "mean_squared_error"
-            ),
-            metrics=(
-                ["accuracy"]
-                if self.task == "classification"
-                else ["mean_squared_error"]
-            ),
-        )
+    def fit(self, X, y, **kwargs):
+        X_scaled = self.scaler.fit_transform(X)
+
+        # 🔧 Convert y to a 2D ndarray
+        if hasattr(y, "values"):
+            y = y.values
+        if y.ndim == 1:
+            y = y.reshape(-1, 1)
+
+        self.model = self._build_model(X_scaled.shape[1], y.shape[1])
         self.model.fit(
             X_scaled,
-            y_train,
-            epochs=self._to_int(self.epochs),
-            batch_size=self._to_int(self.batch_size),
+            y,
+            epochs=self.epochs,
+            batch_size=self.batch_size,
             verbose=0,
         )
 
     def predict(self, X):
         X_scaled = self.scaler.transform(X)
-        preds = self.model.predict(X_scaled)
-        return (
-            (preds > 0.5).astype(int).flatten()
-            if self.task == "classification"
-            else preds.flatten()
-        )
-
-    def predict_proba(self, X):
-        X_scaled = self.scaler.transform(X)
-        preds = self.model.predict(X_scaled)
-        return np.hstack([1 - preds, preds])
-
-    @classmethod
-    def size(cls, config):
-        return 64
-
-    def cleanup(self):
-        self.model = None
+        return self.model.predict(X_scaled)
 
     def get_params(self, deep=True):
         return {
-            "hidden_units": self.hidden_units,
+            "n_jobs": self.n_jobs,
+            "hidden_units_l1": self.hidden_units_l1,
+            "hidden_units_l2": self.hidden_units_l2,
+            "act_l1": self.act_l1,
+            "act_l2": self.act_l2,
+            "bias_l1": self.bias_l1,
+            "bias_l2": self.bias_l2,
+            "optimizer": self.optimizer,
             "epochs": self.epochs,
             "batch_size": self.batch_size,
             "task": self.task,
         }
 
     def set_params(self, **params):
-        for key, val in params.items():
-            setattr(self, key, val)
+        for k, v in params.items():
+            setattr(self, k, v)
         return self
+
+    def cleanup(self):
+        self.model = None
+
+    @classmethod
+    def cost_relative2lgbm(cls):
+        return 10
+
+    @classmethod
+    def size(cls, config):
+        return 64
