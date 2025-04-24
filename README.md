@@ -1,4 +1,3 @@
-
 # OptiBrain
 
 A python package that aims to select automatically the best model for your tasks and save the trained model..
@@ -15,7 +14,7 @@ A python package that aims to select automatically the best model for your tasks
 import pandas as pd
 
 from sklearn.datasets import make_classification
-from optibrain.base.base import SurrogateModeling
+from optibrain import SurrogateModeling
 from optibrain.utils.kriging_model import KRGModel
 import numpy as np
 
@@ -33,7 +32,8 @@ print(srgt.get_estimators_performances)
 srgt.save("./metamodel_folder", "file_name")
 ```
 
-In the method get_best_model, the user can add new learners, by setting True to add_learner and adding learner dictionary with
+In the method get_best_model, the user can add new learners, by setting True to add_learner and adding learner
+dictionary with
 the names of the learners and their classes.  
 The result of this example is a HDF5 file where the information about the selected model are saved.
 

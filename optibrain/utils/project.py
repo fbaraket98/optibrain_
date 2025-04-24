@@ -2,8 +2,8 @@ from datetime import datetime
 from hashlib import blake2b
 
 import pandas as pd
-
 from palma.base.splitting_strategy import ValidationStrategy
+
 from optibrain.utils.utils import check_started
 
 
@@ -66,16 +66,16 @@ class Project:
 
     @check_started("You cannot restart an Project")
     def start(
-        self,
-        X: pd.DataFrame,
-        y: pd.Series,
-        splitter,
-        X_test=None,
-        y_test=None,
-        groups=None,
-        **kwargs,
+            self,
+            X: pd.DataFrame,
+            y: pd.Series,
+            splitter,
+            X_test=None,
+            y_test=None,
+            groups=None,
+            **kwargs,
     ) -> None:
-        from optibrain.utils.checker import ProjectPlanChecker
+        from base.utils.checker import ProjectPlanChecker
         from palma import logger
 
         self.__validation_strategy = ValidationStrategy(splitter)
