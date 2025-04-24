@@ -29,7 +29,6 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Analysing the code with pytest
         run: |
-          pip install pytest-cov
           pip install .[test]
           python -m coverage run -m pytest
           python -m coverage report
@@ -40,6 +39,7 @@ jobs:
         with:
           output: .static/coverage.svg
       - name: Publish coverage report to coverage-badge branch
+        continue-on-error: true
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: coverage-badge
