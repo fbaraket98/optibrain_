@@ -75,12 +75,7 @@ class Project:
             digest_size=5,
         ).hexdigest()
         logger.logger.log_project(self)
-        self.__call_components(self)
         self.__is_started = True
-
-    def __call_components(self, object_: "Project") -> None:
-        for _, component in self.components.items():
-            component(object_)
 
     @property
     def components(self) -> dict:
