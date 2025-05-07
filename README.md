@@ -1,3 +1,5 @@
+from optibrain.utils.NN_model import FullNeuralNetwork
+
 # OptiBrain
 
 A python package that aims to select automatically the best model for your data and save the trained model.
@@ -22,7 +24,6 @@ import pandas as pd
 
 from sklearn.datasets import make_classification
 from optibrain import SurrogateModeling
-import numpy as np
 
 X, y = make_classification()
 X = pd.DataFrame(X)
@@ -38,9 +39,13 @@ print(srgt.get_estimators_performances)
 srgt.save("./metamodel_folder", "file_name")
 ```
 
-In the method get_best_model, the user can add new learners, by setting True to add_learner and adding learner
-dictionary with
-the names of the learners and their classes.  
+In the method get_best_model, the user can add new learners, by adding learner
+dictionary with the names of the learners and their classes.
+```python
+from optibrain.utils.NN_model import FullNeuralNetwork
+#ADD the Neural Network personalized learner 
+srgt.get_best_model(X,y,learners={"NN":FullNeuralNetwork})
+```
 The result of this example is a HDF5 file where the information about the selected model is saved.
 
 The saved model, can be loaded with the package revival.   

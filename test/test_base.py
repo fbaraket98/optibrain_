@@ -13,7 +13,7 @@ def test_save_classification_prob():
     X = pd.DataFrame(X)
     y = pd.Series(y)
     # Optimizer Flaml parameters
-    estimator_list = ["catboost"]
+    estimator_list = ["catboost", "xgboost", "lgbm"]
     # Instanciate the metamodel
     srgt = SurrogateModeling(
         estimator_list=estimator_list, problem="classification", project_name="default"
@@ -45,7 +45,7 @@ def test_predictions():
     # split train and test datasets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-    surrogate_model = SurrogateModeling(["catboost"], "regression")
+    surrogate_model = SurrogateModeling(["catboost", "lgbm", "KRG"], "regression")
     surrogate_model.get_best_model(X_train, y_train)
 
     # prediction with surrogate_model
