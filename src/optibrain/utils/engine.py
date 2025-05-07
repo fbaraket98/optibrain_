@@ -160,3 +160,15 @@ class FlamlOptimizer(BaseOptimizer):
     @property
     def best_config(self):
         return self.__optimizer.best_config
+
+    @property
+    def supported_metrics(self):
+        return self.__optimizer.supported_metrics
+
+    @property
+    def metrics_for_best_config(self):
+        return self.__optimizer.metrics_for_best_config
+
+    @property
+    def best_loss(self):
+        return 1 - pd.Series(self.__optimizer.best_loss)
