@@ -3,10 +3,10 @@ from typing import Optional, List, Dict
 import keras
 import pandas as pd
 from palma.base.splitting_strategy import ValidationStrategy
+
 from revival import LiteModel
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import ShuffleSplit
-
 from optibrain.utils.engine import FlamlOptimizer
 from optibrain.utils.project import Project
 
@@ -50,9 +50,6 @@ class SurrogateModeling:
             )
         )
         X, y = splitting_strategy(X, y)
-        self.X = X
-        self.y = y
-
         # Project creation
         project = Project(problem=self.problem, project_name=self.project_name)
         project.start(
@@ -77,6 +74,8 @@ class SurrogateModeling:
         # Get the best model
         best_model = optimizer.best_model_
         self.__model = best_model
+        self.X = X
+        self.y = y
 
     @property
     def get_best_loss(self):
@@ -123,3 +122,12 @@ class SurrogateModeling:
         srgt_model = LiteModel()
         srgt_model.set(self.X, self.y, self.model)
         srgt_model.dump(folder_name, file_name)
+
+    def predict(self, X_new):
+        """Function aims to predict targets from new values
+        :param: X_new : Dataframe or array to predict
+        """
+        srgt_model = LiteModel()
+        srgt_model.set(self.X, self.y, self.model)
+        self.prediction = srgt_model.predict(X_new)
+        return self.prediction

@@ -14,11 +14,10 @@ def test_save_classification_prob():
     y = pd.Series(y)
     # Optimizer Flaml parameters
     estimator_list = ["catboost", "xgboost", "lgbm"]
-    # Instanciate the metamodel
+    # Instantiate the metamodel
     srgt = SurrogateModeling(
         estimator_list=estimator_list, problem="classification", project_name="default"
     )
-    # Get the best model, wihth adding new learner to flaml
     srgt.get_best_model(X, y)
     # save the model
     with tempfile.TemporaryDirectory() as tmpdir:

@@ -101,13 +101,14 @@ class FlamlOptimizer(BaseOptimizer):
         if self.learner is not None:
             for key, value in self.learner.items():
                 self.__optimizer.add_learner(key, learner_class=value)
+        y_ = y.copy()
         y_train = (
-            pd.Series(y.values.flatten(), index=range(len(X)))
+            pd.Series(y_.values.flatten(), index=range(len(X)))
             if not is_multi_output
-            else y.iloc[:, 0].to_numpy()
+            else y_.iloc[:, 0].to_numpy()
         )
         self.__optimizer.fit(
-            X_train=pd.DataFrame(X.values, index=range(len(X))),
+            X_train=X.copy(),
             y_train=y_train,
             split_type=split_type,
             groups=groups,
