@@ -1,11 +1,12 @@
 from typing import Optional, List, Dict
 
+import keras
 import pandas as pd
 from palma.base.splitting_strategy import ValidationStrategy
+
 from revival import LiteModel
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import ShuffleSplit
-
 from optibrain.utils.engine import FlamlOptimizer
 from optibrain.utils.project import Project
 
@@ -17,9 +18,13 @@ class SurrogateModeling:
         self.__config_estimator = None
         self.__best_time_train = None
         self.__best_config = None
+        self.__metrics_for_best_config = None
+        self.__supported_metrics = None
+        self.__best_loss = None
         self.estimator_list = estimator_list
         self.problem = problem
         self.project_name = project_name
+        self.prediction = None
 
     def get_best_model(
         self,
@@ -33,7 +38,7 @@ class SurrogateModeling:
         :param learners dict, with new learner to add
         """
         engine_parameters = {
-            "time_budget": 30,
+            "time_budget": 50,
             "metric": "r2",
             "log_training_metric": True,
             "estimator_list": self.estimator_list,
@@ -45,9 +50,6 @@ class SurrogateModeling:
             )
         )
         X, y = splitting_strategy(X, y)
-        self.X = X
-        self.y = y
-
         # Project creation
         project = Project(problem=self.problem, project_name=self.project_name)
         project.start(
@@ -66,13 +68,33 @@ class SurrogateModeling:
         self.__config_estimator = optimizer.best_config_estimator
         self.__best_time_train = optimizer.best_time_estimator
         self.__best_config = optimizer.best_config
+        self.__supported_metrics = optimizer.supported_metrics
+        self.__metrics_for_best_config = optimizer.metrics_for_best_config
+        self.__best_loss = optimizer.best_loss
         # Get the best model
         best_model = optimizer.best_model_
         self.__model = best_model
+        self.X = X
+        self.y = y
+
+    @property
+    def get_best_loss(self):
+        return self.__best_loss
+
+    @property
+    def get_supported_metrics(self):
+        return self.__supported_metrics
+
+    @property
+    def get_metrics_for_best_config(self):
+        return self.__metrics_for_best_config
 
     @property
     def get_best_config(self):
-        return self.__best_config
+        if isinstance(self.model, keras.Sequential):
+            return self.model.summary()
+        else:
+            return self.__best_config
 
     @property
     def get_best_time_train_estimator(self):
@@ -100,3 +122,12 @@ class SurrogateModeling:
         srgt_model = LiteModel()
         srgt_model.set(self.X, self.y, self.model)
         srgt_model.dump(folder_name, file_name)
+
+    def predict(self, X_new):
+        """Function aims to predict targets from new values
+        :param: X_new : Dataframe or array to predict
+        """
+        srgt_model = LiteModel()
+        srgt_model.set(self.X, self.y, self.model)
+        self.prediction = srgt_model.predict(X_new)
+        return self.prediction

@@ -10,7 +10,6 @@ class FullNeuralNetwork(BaseEstimator):
         n_jobs=None,
         hidden_units_l1=32,
         hidden_units_l2=32,
-        hidden_units_l3=32,
         act_l1="relu",
         act_l2="relu",
         act_l3="relu",
@@ -26,7 +25,6 @@ class FullNeuralNetwork(BaseEstimator):
         self.n_jobs = n_jobs
         self.hidden_units_l1 = hidden_units_l1
         self.hidden_units_l2 = hidden_units_l2
-        self.hidden_units_l3 = hidden_units_l3
         self.act_l1 = act_l1
         self.act_l2 = act_l2
         self.act_l3 = act_l3
@@ -49,7 +47,6 @@ class FullNeuralNetwork(BaseEstimator):
         return {
             "hidden_units_l1": {"domain": (16, 64), "init_value": 32},
             "hidden_units_l2": {"domain": (16, 64), "init_value": 32},
-            "hidden_units_l3": {"domain": (16, 64), "init_value": 32},
             "act_l1": {"domain": ["relu", "tanh"], "init_value": "relu"},
             "act_l2": {"domain": ["relu", "tanh"], "init_value": "relu"},
             "bias_l1": {"domain": [True, False], "init_value": True},
@@ -60,6 +57,7 @@ class FullNeuralNetwork(BaseEstimator):
         }
 
     def _build_model(self, input_dim, output_dim):
+        # function to build the neural network model
         model = keras.Sequential()
         model.add(layers.Input(shape=(input_dim,)))
         model.add(
@@ -80,6 +78,7 @@ class FullNeuralNetwork(BaseEstimator):
         return model
 
     def fit(self, X, y, **kwargs):
+        # function aims to fit the built model
         X_scaled = self.scaler.fit_transform(X)
 
         if hasattr(y, "values"):
@@ -97,10 +96,12 @@ class FullNeuralNetwork(BaseEstimator):
         )
 
     def predict(self, X):
+        # Function aims to predict from new vales of X
         X_scaled = self.scaler.transform(X)
         return self.model.predict(X_scaled)
 
     def get_params(self, deep=True):
+        # Function that returns the params of the built model
         return {
             "n_jobs": self.n_jobs,
             "hidden_units_l1": self.hidden_units_l1,
