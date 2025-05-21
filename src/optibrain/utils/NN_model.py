@@ -15,7 +15,6 @@ class FullNeuralNetwork(BaseEstimator):
         act_l3="relu",
         bias_l1=True,
         bias_l2=True,
-        bias_l3=True,
         optimizer="adam",
         epochs=50,
         batch_size=32,
@@ -27,10 +26,8 @@ class FullNeuralNetwork(BaseEstimator):
         self.hidden_units_l2 = hidden_units_l2
         self.act_l1 = act_l1
         self.act_l2 = act_l2
-        self.act_l3 = act_l3
         self.bias_l1 = bias_l1
         self.bias_l2 = bias_l2
-        self.bias_l3 = bias_l3
         self.optimizer = optimizer
         self.epochs = epochs
         self.batch_size = batch_size

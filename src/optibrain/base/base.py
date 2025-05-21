@@ -3,7 +3,7 @@ from typing import Optional, List, Dict
 import keras
 import pandas as pd
 from palma.base.splitting_strategy import ValidationStrategy
-
+import numpy as np
 from revival import LiteModel
 from sklearn.base import BaseEstimator
 from sklearn.model_selection import ShuffleSplit
@@ -25,21 +25,41 @@ class SurrogateModeling:
         self.problem = problem
         self.project_name = project_name
         self.prediction = None
+        self.X_train = None
+        self.y_train = None
+        self.y_test = None
+        self.X_test = None
 
     def get_best_model(
         self,
         X: pd.DataFrame,
         y: pd.DataFrame,
         learners: Optional[Dict[str, BaseEstimator]] = None,
+        log_target=False,
     ):
         """Function that aims to select the best model, the user can also add learner to flaml
-        :param X: data for training
-        :param y: data for training
-        :param learners dict, with new learner to add
+        Parameters
+        X: pd.DataFrame
+            X data for training
+        y : pd.DataFrame
+            y data for training
+        learners : Dict
+            Dictionary for new personalized learners
+        log_target : bool
+            True if you need to log-transforming the target
         """
+        if self.problem == "regression":
+            metric = "r2"
+        else:
+            metric = "accuracy"
+
+        if log_target:
+            y = np.log(y)
+            y = pd.DataFrame(y)
+
         engine_parameters = {
             "time_budget": 50,
-            "metric": "r2",
+            "metric": metric,
             "log_training_metric": True,
             "estimator_list": self.estimator_list,
         }
@@ -50,6 +70,11 @@ class SurrogateModeling:
             )
         )
         X, y = splitting_strategy(X, y)
+        self.X_train = X.loc[splitting_strategy.train_index]
+        self.X_test = X.loc[splitting_strategy.test_index]
+        self.y_train = y.loc[splitting_strategy.train_index]
+        self.y_test = y.loc[splitting_strategy.test_index]
+
         # Project creation
         project = Project(problem=self.problem, project_name=self.project_name)
         project.start(
@@ -116,16 +141,25 @@ class SurrogateModeling:
 
     def save(self, folder_name: str, file_name: str):
         """Function aims to save the model, the data and prediction in hdf5 file
-        :param folder_name: The folder name where to save the hfd5 file
-        :param file_name: The file name where to save the model, the data and the prediction
+        Parameters
+        ----------
+        folder_name:str
+            The folder name where to save the hfd5 file
+        file_name: str
+            The file name where to save the model, the data and the prediction
         """
         srgt_model = LiteModel()
-        srgt_model.set(self.X, self.y, self.model)
+        srgt_model.set(self.X_train, self.y_train, self.model)
+        srgt_model.set_test_data(self.X_test, self.y_test)
+        srgt_model.score = self.get_best_loss
         srgt_model.dump(folder_name, file_name)
 
     def predict(self, X_new):
         """Function aims to predict targets from new values
-        :param: X_new : Dataframe or array to predict
+        Parameters
+        ----------
+        X_new :
+        Dataframe or array to predict
         """
         srgt_model = LiteModel()
         srgt_model.set(self.X, self.y, self.model)
