@@ -8,7 +8,7 @@ from optibrain import SurrogateModeling
 
 
 def test_save_classification_prob():
-    from revival import LiteModel
+    from revival import load_model
 
     X, y = make_classification()
     X = pd.DataFrame(X)
@@ -23,7 +23,7 @@ def test_save_classification_prob():
     # save the model
     with tempfile.TemporaryDirectory() as tmpdir:
         srgt.save(tmpdir, "file_test")
-        loadmodel = LiteModel.load(tmpdir, "file_test")
+        loadmodel = load_model(tmpdir, "file_test")
 
     # Asserts
     assert np.allclose(srgt.X, X), "The data X are not matching"
@@ -35,7 +35,7 @@ def test_save_classification_prob():
 
 
 def test_predictions():
-    from revival import LiteModel
+    from revival import load_model
     from sklearn.model_selection import train_test_split
 
     X, y = make_regression()
@@ -54,7 +54,7 @@ def test_predictions():
 
         surrogate_model.save(tmpdir, "test_prediction")
         # load the trained model
-        loaded_model = LiteModel.load(tmpdir, "test_prediction")
+        loaded_model = load_model(tmpdir, "test_prediction")
 
     loaded_model_prediction = loaded_model.predict(X_test)
     # assert predictions
