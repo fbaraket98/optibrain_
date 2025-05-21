@@ -1,3 +1,14 @@
+# Copyright MewsLabs 2025
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#     http://www.apache.org/licenses/LICENSE-2.0
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and limitations under the License.
+
+
 from typing import Optional, List, Dict
 
 import keras
@@ -30,7 +41,7 @@ class SurrogateModeling:
         self.y_test = None
         self.X_test = None
 
-    def get_best_model(
+    def find_best_model(
         self,
         X: pd.DataFrame,
         y: pd.DataFrame,
@@ -103,34 +114,34 @@ class SurrogateModeling:
         self.y = y
 
     @property
-    def get_best_loss(self):
+    def best_loss(self):
         return self.__best_loss
 
     @property
-    def get_supported_metrics(self):
+    def supported_metrics(self):
         return self.__supported_metrics
 
     @property
-    def get_metrics_for_best_config(self):
+    def metrics_for_best_config(self):
         return self.__metrics_for_best_config
 
     @property
-    def get_best_config(self):
+    def best_config(self):
         if isinstance(self.model, keras.Sequential):
             return self.model.summary()
         else:
             return self.__best_config
 
     @property
-    def get_best_time_train_estimator(self):
+    def best_time_train_estimator(self):
         return self.__best_time_train
 
     @property
-    def get_best_config_estimators(self):
+    def best_config_estimators(self):
         return self.__config_estimator
 
     @property
-    def get_estimators_performances(self):
+    def estimators_performances(self):
         """Function that returns the performances of trained estimator"""
         return self.__performance
 
@@ -150,8 +161,7 @@ class SurrogateModeling:
         """
         srgt_model = LiteModel()
         srgt_model.set(self.X_train, self.y_train, self.model)
-        srgt_model.set_test_data(self.X_test, self.y_test)
-        srgt_model.score = self.get_best_loss
+        srgt_model.score = self.best_loss
         srgt_model.dump(folder_name, file_name)
 
     def predict(self, X_new):

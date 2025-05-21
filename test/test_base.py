@@ -1,4 +1,5 @@
 import tempfile
+
 import numpy as np
 import pandas as pd
 from sklearn.datasets import make_classification, make_regression
@@ -18,12 +19,11 @@ def test_save_classification_prob():
     srgt = SurrogateModeling(
         estimator_list=estimator_list, problem="classification", project_name="default"
     )
-    srgt.get_best_model(X, y)
+    srgt.find_best_model(X, y)
     # save the model
     with tempfile.TemporaryDirectory() as tmpdir:
         srgt.save(tmpdir, "file_test")
-        loadmodel = LiteModel()
-        loadmodel.load(tmpdir, "file_test")
+        loadmodel = LiteModel.load(tmpdir, "file_test")
 
     # Asserts
     assert np.allclose(srgt.X, X), "The data X are not matching"
@@ -45,21 +45,18 @@ def test_predictions():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     surrogate_model = SurrogateModeling(["catboost", "lgbm", "KRG"], "regression")
-    surrogate_model.get_best_model(X_train, y_train)
+    surrogate_model.find_best_model(X_train, y_train)
 
     # prediction with surrogate_model
-    surrogate_model_prediction = surrogate_model.model.predict(X_test)
+    surrogate_model_prediction = surrogate_model.predict(X_test)
     # save the trained model
     with tempfile.TemporaryDirectory() as tmpdir:
 
         surrogate_model.save(tmpdir, "test_prediction")
+        # load the trained model
+        loaded_model = LiteModel.load(tmpdir, "test_prediction")
 
-        loaded_model = LiteModel()
-        # Load the saved model
-        loaded_model.load(tmpdir, "test_prediction")
-
-    loaded_model.predict(X_test)
-    loaded_model_prediction = loaded_model.prediction
+    loaded_model_prediction = loaded_model.predict(X_test)
     # assert predictions
     assert np.allclose(
         loaded_model_prediction, surrogate_model_prediction

@@ -32,9 +32,9 @@ estimator_list = ["catboost", 'xgboost', 'lgbm', 'KRG']
 # instanciate the metamodel
 srgt = SurrogateModeling(estimator_list=estimator_list, problem='classification')
 # select the best model
-srgt.get_best_model(X, y)
+srgt.find_best_model(X, y)
 # print the performances of the estimators
-print(srgt.get_estimators_performances)
+print(srgt.estimators_performances)
 # save the model
 srgt.save("./metamodel_folder", "file_name")
 ```
@@ -44,7 +44,7 @@ dictionary with the names of the learners and their classes.
 ```python
 from optibrain.utils.NN_model import FullNeuralNetwork
 #ADD the Neural Network personalized learner 
-srgt.get_best_model(X,y,learners={"NN":FullNeuralNetwork})
+srgt.find_best_model(X,y,learners={"NN":FullNeuralNetwork})
 ```
 The result of this example is a HDF5 file where the information about the selected model is saved.
 
