@@ -4,7 +4,7 @@ A python package that aims to automatically select the best model for your data 
 The information selected model and information is saved to an efficient and portable HDF5 file.
 
 ## Install
-To install the basic verion
+To install the basic version
 ```shell
 pip install optibrain@git+https://github.com/eurobios-mews-labs/optibrain
 ```
