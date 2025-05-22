@@ -159,8 +159,7 @@ class SurrogateModeling:
         file_name: str
             The file name where to save the model, the data and the prediction
         """
-        srgt_model = LiteModel()
-        srgt_model.set(self.X_train, self.y_train, self.model)
+        srgt_model = LiteModel(self.X_train, self.y_train, self.model)
         srgt_model.score = self.best_loss
         srgt_model.dump(folder_name, file_name)
 
@@ -171,7 +170,6 @@ class SurrogateModeling:
         X_new :
         Dataframe or array to predict
         """
-        srgt_model = LiteModel()
-        srgt_model.set(self.X, self.y, self.model)
+        srgt_model = LiteModel(self.X_train, self.y_train, self.model)
         self.prediction = srgt_model.predict(X_new)
         return self.prediction
