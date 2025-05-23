@@ -62,7 +62,7 @@ class SurrogateModeling:
         if self.problem == "regression":
             metric = "r2"
         else:
-            metric = "accuracy"
+            metric = "roc_auc"
 
         if log_target:
             y = np.log(y)
