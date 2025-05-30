@@ -30,8 +30,8 @@ def test_save_classification_prob():
     assert np.allclose(srgt.y, y), "The data y are not matching"
 
     # Asserts
-    assert np.allclose(loadmodel.X_train, X), "The data X are not matching"
-    assert np.allclose(loadmodel.y_train, y), "The data y are not matching"
+    assert np.allclose(loadmodel.X_train, srgt.X_train), "The data X are not matching"
+    assert np.allclose(loadmodel.y_train, srgt.y_train), "The data y are not matching"
 
 
 def test_predictions():
@@ -42,13 +42,12 @@ def test_predictions():
     X = pd.DataFrame(X)
     y = pd.DataFrame(y)
     # split train and test datasets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
     surrogate_model = SurrogateModeling(["catboost", "lgbm", "KRG"], "regression")
-    surrogate_model.find_best_model(X_train, y_train)
+    surrogate_model.find_best_model(X, y)
 
     # prediction with surrogate_model
-    surrogate_model_prediction = surrogate_model.predict(X_test)
+    surrogate_model_prediction = surrogate_model.predict(surrogate_model.X_test)
     # save the trained model
     with tempfile.TemporaryDirectory() as tmpdir:
 
@@ -56,7 +55,7 @@ def test_predictions():
         # load the trained model
         loaded_model = load_model(tmpdir, "test_prediction")
 
-    loaded_model_prediction = loaded_model.predict(X_test)
+    loaded_model_prediction = loaded_model.predict(surrogate_model.X_test)
     # assert predictions
     assert np.allclose(
         loaded_model_prediction, surrogate_model_prediction

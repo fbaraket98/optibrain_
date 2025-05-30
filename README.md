@@ -20,10 +20,10 @@ Then run
 ```python
 import pandas as pd
 
-from sklearn.datasets import make_classification
+from sklearn.datasets import make_regression
 from optibrain import SurrogateModeling
 
-X, y = make_classification()
+X, y = make_regression()
 X = pd.DataFrame(X)
 y = pd.Series(y)
 estimator_list = ["catboost", 'xgboost', 'lgbm', 'KRG']
