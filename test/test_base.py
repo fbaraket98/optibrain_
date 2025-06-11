@@ -36,7 +36,6 @@ def test_save_classification_prob():
 
 def test_predictions():
     from revival import load_model
-    from sklearn.model_selection import train_test_split
 
     X, y = make_regression()
     X = pd.DataFrame(X)
