@@ -12,7 +12,7 @@ def test_save_classification_prob():
 
     X, y = make_classification()
     X = pd.DataFrame(X)
-    y = pd.Series(y)
+    y = pd.DataFrame(y)
     # Optimizer Flaml parameters
     estimator_list = ["catboost", "xgboost", "lgbm"]
     # Instantiate the metamodel
