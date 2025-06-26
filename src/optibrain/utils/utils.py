@@ -15,6 +15,7 @@ from functools import wraps
 from hashlib import sha256
 from typing import Callable
 
+from palma import Project
 import pandas as pd
 from sklearn import clone
 
