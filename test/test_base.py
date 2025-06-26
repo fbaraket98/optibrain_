@@ -37,6 +37,7 @@ def test_save_classification_prob():
 def test_predictions():
     from revival import load_model
 
+    # regression pb
     X, y = make_regression()
     X = pd.DataFrame(X)
     y = pd.DataFrame(y)
