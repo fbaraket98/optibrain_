@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.6"
 dependencies = [
     "FLAML == 2.3.4",
-    "numpy == 2.1.0",
+    "numpy >= 1.26.0, <2.0",
     "palma == 2025.1.5",
     "pandas == 2.2.3",
     "revival @ git+https://github.com/eurobios-mews-labs/revivAl.git",
